@@ -16,13 +16,15 @@
 
 #define ARRAY_SIZE(a) (sizeof(a)/sizeof(a[0]))
 
-const char *loopfile = "j8100.mid";  // simple and short file
+const char *loopfile = "j2.mid";  // simple and short file
+
+//const char *loopfile = "j1080.mid";  // simple and short file
 
 SdFat	SD;
 MD_MIDIFile SMF;
 
 int basePins[1] = {6};
-int snarePins[2] = {2, 3};
+int snarePins[1] = {8};
 int hiHatPins[1] = {4};
 
 int basePins2[1] = {0};
@@ -32,6 +34,8 @@ int hiHatPins2[1] = {0};
 unsigned long baseTime = 0;
 unsigned long snareTime = 0;
 unsigned long hiHatTime = 0;
+
+boolean snareFlag = false;
 
 
 unsigned long baseTime2 = 0;
@@ -50,31 +54,40 @@ void midiCallback(midi_event *pev)
   int velocity = pev->data[2];
 //  int mDelay = pev->data[3];
 //
-//  DEBUG(" ", mDelay);
+// DEBUG(" ", mDelay);
 //  DEBUG(" ", note);
 //  DEBUG(" ", velocity);
+ // Serial.println("");
 //  delay(mDelay);
   switch(note) {
     case 36:
     setBase(velocity > 0);
     break;
+    
     case 38:
     setSnare(velocity > 0);
+    break;
+    
     case 40:
     setSnare(velocity > 0);
     break;
+    
     case 42 :
     setHiHat(velocity > 0);
     break;
+    
     case 44:
     setHiHat(velocity > 0);
     break; 
+    
     case 46:
     setHiHat(velocity > 0);
     break;
+    
     case 49:
     setHiHat(velocity > 0);
     break;
+    
     case 33:
     setHiHat(velocity > 0);
     break;
@@ -82,12 +95,13 @@ void midiCallback(midi_event *pev)
 }
 
 void setBase(bool on) {
-  
   if (on) {
     baseTime = millis();
+//    Serial.println("base on");
     for (int i=0; i< 1; i++) {
-      Serial.print("base on");
       digitalWrite(basePins[i], LOW);    
+//      delay(50);
+//      digitalWrite(basePins[i], HIGH);    
     }
   }
   
@@ -96,8 +110,8 @@ void setBase(bool on) {
 void setSnare(bool on) {
   if (on) {
     snareTime = millis();
+    snareFlag = true;
     for (int i=0; i< 1; i++) {
-      Serial.print("base on");
       digitalWrite(snarePins[i], LOW);    
     }
   }
@@ -105,10 +119,10 @@ void setSnare(bool on) {
 
 void setHiHat(bool on) {
   if (on) {
-    Serial.print("hi hat on");
+  //  Serial.print("hi hat on");
     hiHatTime = millis();
     for (int i=0; i< 1; i++) {
-      Serial.print("base on");
+    //  Serial.print("base on");
       digitalWrite(hiHatPins[i], LOW);    
     }
   }
@@ -119,7 +133,7 @@ void setBase2(bool on) {
   if (on) {
     baseTime2 = millis();
     for (int i=0; i< 1; i++) {
-      Serial.print("base on");
+   //   Serial.print("base on");
       digitalWrite(basePins2[i], LOW);    
     }
   }
@@ -130,7 +144,7 @@ void setSnare2(bool on) {
   if (on) {
     snareTime2 = millis();
     for (int i=0; i< 1; i++) {
-      Serial.print("base on");
+    //  Serial.print("base on");
       digitalWrite(snarePins2[i], LOW);    
     }
   }
@@ -138,10 +152,10 @@ void setSnare2(bool on) {
 
 void setHiHat2(bool on) {
   if (on) {
-    Serial.print("hi hat on");
+  //  Serial.print("hi hat on");
     hiHatTime2 = millis();
     for (int i=0; i< 1; i++) {
-      Serial.print("base on");
+   //   Serial.print("base on");
       digitalWrite(hiHatPins2[i], LOW);    
     }
   }
@@ -172,7 +186,7 @@ void setup(void)
   SMF.begin(&SD);
   SMF.setMidiHandler(midiCallback);
 //  SMF.looping(true);
-  SMF.setTempoAdjust(30);
+  SMF.setTempoAdjust(80);
 
 
   // use the next file name and play it
@@ -188,11 +202,11 @@ void setup(void)
    
   pinMode(4, OUTPUT);
   pinMode(6, OUTPUT);
-  pinMode(2, OUTPUT);
+  pinMode(8, OUTPUT);
   pinMode(3, OUTPUT);
   digitalWrite(4, HIGH); 
   digitalWrite(6, HIGH); 
-  digitalWrite(2, HIGH); 
+  digitalWrite(8, HIGH); 
   digitalWrite(3, HIGH); 
   snareTime = millis();
   hiHatTime = millis();
@@ -208,19 +222,20 @@ void loop(void)
   {
     SMF.getNextEvent();
   } 
-
-  if (millis() - baseTime > 30) {
-    turnOff(basePins);
-  }
-
-  if (millis() - snareTime > 50) {
+  
+  if ((millis() - snareTime) > 50 && snareFlag) {
     turnOff(snarePins);
+    snareFlag = false;
   }
 
-  if (millis() - hiHatTime > 20) {
+  if ((millis() - hiHatTime) > 50) {
     turnOff(hiHatPins);
   }
 
+if ((millis() - baseTime) > 50) {
+    turnOff(basePins);
+  }
+  
 //  if (millis() - baseTime2 > 40) {
 //    turnOff(basePins2);
 //  }
