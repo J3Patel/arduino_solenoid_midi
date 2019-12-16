@@ -16,8 +16,8 @@
 
 #define ARRAY_SIZE(a) (sizeof(a)/sizeof(a[0]))
 
-const char *loopfile = "j2.mid";  // simple and short file
-
+const char *loopfile = "midi3n.mid";  // simple and short file
+//dhol1finalmidi
 //const char *loopfile = "j1080.mid";  // simple and short file
 
 SdFat	SD;
@@ -36,6 +36,8 @@ unsigned long snareTime = 0;
 unsigned long hiHatTime = 0;
 
 boolean snareFlag = false;
+boolean baseFlag = false;
+boolean hiHatFlag = false;
 
 
 unsigned long baseTime2 = 0;
@@ -52,44 +54,69 @@ void midiCallback(midi_event *pev)
 //  
   int note = pev->data[1];
   int velocity = pev->data[2];
-//  int mDelay = pev->data[3];
+  int mDelay = pev->channel;
 //
-// DEBUG(" ", mDelay);
-//  DEBUG(" ", note);
-//  DEBUG(" ", velocity);
- // Serial.println("");
+ DEBUG(" ", mDelay);
+  DEBUG(" ", note);
+  DEBUG(" ", velocity);
+  Serial.println("");
 //  delay(mDelay);
   switch(note) {
     case 36:
-    setBase(velocity > 0);
+    setBase(velocity != 64);
+    break;
+
+    case 51:
+    setHiHat(velocity != 64);
+    break;
+
+    case 35:
+    setBase(velocity != 64);
+    break;
+
+       case 45:
+    setBase(velocity != 64);
+    break;
+
+       case 43:
+    setBase(velocity != 64);
+    break;
+
+       case 47:
+    setBase(velocity != 64);
     break;
     
     case 38:
-    setSnare(velocity > 0);
+    setSnare(velocity != 64);
     break;
+
     
     case 40:
-    setSnare(velocity > 0);
+    setSnare(velocity != 64);
     break;
     
     case 42 :
-    setHiHat(velocity > 0);
+    setHiHat(velocity != 64);
     break;
     
     case 44:
-    setHiHat(velocity > 0);
+    setHiHat(velocity != 64);
     break; 
     
     case 46:
-    setHiHat(velocity > 0);
+    setHiHat(velocity != 64);
     break;
     
     case 49:
-    setHiHat(velocity > 0);
+    setHiHat(velocity != 64);
     break;
     
     case 33:
-    setHiHat(velocity > 0);
+    setHiHat(velocity != 64);
+    break;
+    
+    case 39:
+    setHiHat(velocity != 64);
     break;
   }  
 }
@@ -97,11 +124,9 @@ void midiCallback(midi_event *pev)
 void setBase(bool on) {
   if (on) {
     baseTime = millis();
-//    Serial.println("base on");
+    baseFlag = true;
     for (int i=0; i< 1; i++) {
       digitalWrite(basePins[i], LOW);    
-//      delay(50);
-//      digitalWrite(basePins[i], HIGH);    
     }
   }
   
@@ -119,10 +144,9 @@ void setSnare(bool on) {
 
 void setHiHat(bool on) {
   if (on) {
-  //  Serial.print("hi hat on");
+    hiHatFlag = true;
     hiHatTime = millis();
     for (int i=0; i< 1; i++) {
-    //  Serial.print("base on");
       digitalWrite(hiHatPins[i], LOW);    
     }
   }
@@ -164,7 +188,7 @@ void setHiHat2(bool on) {
 void turnOff(int pins[]) {
   for (int i=0; i< sizeof(pins); i++) {
       digitalWrite(pins[i], HIGH);    
-    }
+  }
 }
 
 void setup(void)
@@ -186,7 +210,7 @@ void setup(void)
   SMF.begin(&SD);
   SMF.setMidiHandler(midiCallback);
 //  SMF.looping(true);
-  SMF.setTempoAdjust(80);
+//  SMF.setTempoAdjust(50);
 
 
   // use the next file name and play it
@@ -223,17 +247,19 @@ void loop(void)
     SMF.getNextEvent();
   } 
   
-  if ((millis() - snareTime) > 50 && snareFlag) {
+  if ((millis() - snareTime) > 20 && snareFlag) {
     turnOff(snarePins);
     snareFlag = false;
   }
 
-  if ((millis() - hiHatTime) > 50) {
+  if ((millis() - hiHatTime) > 50 && hiHatFlag) {
     turnOff(hiHatPins);
+    hiHatFlag = false;
   }
 
-if ((millis() - baseTime) > 50) {
+if ((millis() - baseTime) > 80 && baseFlag) {
     turnOff(basePins);
+    baseFlag = false;
   }
   
 //  if (millis() - baseTime2 > 40) {
