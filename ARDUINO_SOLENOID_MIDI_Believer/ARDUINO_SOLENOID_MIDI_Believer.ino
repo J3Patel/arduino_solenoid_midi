@@ -16,34 +16,72 @@
 
 #define ARRAY_SIZE(a) (sizeof(a)/sizeof(a[0]))
 
-const char *loopfile = "midi3n.mid";  // simple and short file
-//dhol1finalmidi
-//const char *loopfile = "j1080.mid";  // simple and short file
+const char *loopfile = "blvr6.mid";  // simple and short file
 
 SdFat	SD;
 MD_MIDIFile SMF;
 
-int basePins[1] = {6};
-int snarePins[1] = {8};
-int hiHatPins[1] = {4};
+int cymbal1Pin = 2;
+int cymbal2Pin = 3; //3
 
-int basePins2[1] = {0};
-int snarePins2[2] = {0,0};
-int hiHatPins2[1] = {0};
+int tom1Pin = 4;
+int tom2Pin = 5;
+int tom3Pin = 6;
+int tom4Pin = 7;
 
-unsigned long baseTime = 0;
-unsigned long snareTime = 0;
-unsigned long hiHatTime = 0;
+int snarePin = 8;
 
-boolean snareFlag = false;
-boolean baseFlag = false;
-boolean hiHatFlag = false;
+int basePin = 9;
+
+int clapPin = 10;
+
+int hiHatPin = 11;
+int hiHatOpenPin = 12;
+
+int ridePin = 1; //13
 
 
-unsigned long baseTime2 = 0;
-unsigned long snareTime2 = 0;
-unsigned long hiHatTime2 = 0;
+unsigned long cymbal1PinTime = 0;
+unsigned long cymbal2PinTime = 0;
 
+unsigned long tom1PinTime = 0;
+unsigned long tom2PinTime = 0;
+unsigned long tom3PinTime = 0;
+unsigned long tom4PinTime = 0;
+
+unsigned long snarePinTime = 0;
+
+unsigned long basePinTime = 0;
+
+unsigned long clapPinTime = 0;
+
+unsigned long hiHatPinTime = 0;
+unsigned long hiHatOpenPinTime = 0;
+
+unsigned long ridePinTime = 0;
+
+
+
+
+
+boolean cymbal1PinFlag = false;
+boolean cymbal2PinFlag = false;
+
+boolean tom1PinFlag = false;
+boolean tom2PinFlag = false;
+boolean tom3PinFlag = false;
+boolean tom4PinFlag = false;
+
+boolean snarePinFlag = false;
+
+boolean basePinFlag = false;
+
+boolean clapPinFlag = false;
+
+boolean hiHatPinFlag = false;
+boolean hiHatOpenPinFlag = false;
+
+boolean ridePinFlag = false;
 
 
 void midiCallback(midi_event *pev)
@@ -62,141 +100,167 @@ void midiCallback(midi_event *pev)
   Serial.println("");
 //  delay(mDelay);
   switch(note) {
-    case 36:
-    setBase(velocity != 64);
-    break;
-
-    case 51:
-    setHiHat(velocity != 64);
-    break;
-
     case 35:
-    setBase(velocity != 64);
+    setBase(velocity != 0);
     break;
 
-       case 45:
-    setBase(velocity != 64);
-    break;
 
-       case 43:
-    setBase(velocity != 64);
-    break;
-
-       case 47:
-    setBase(velocity != 64);
-    break;
-    
-    case 38:
-    setSnare(velocity != 64);
-    break;
-
-    
-    case 40:
-    setSnare(velocity != 64);
-    break;
-    
-    case 42 :
-    setHiHat(velocity != 64);
-    break;
-    
-    case 44:
-    setHiHat(velocity != 64);
-    break; 
-    
-    case 46:
-    setHiHat(velocity != 64);
-    break;
-    
-    case 49:
-    setHiHat(velocity != 64);
-    break;
-    
-    case 33:
-    setHiHat(velocity != 64);
+    case 41:
+    setTom4(velocity != 0);
     break;
     
     case 39:
-    setHiHat(velocity != 64);
+    setClap(velocity != 0);
     break;
+
+    case 40:
+    setSnare(velocity != 0);
+    break;
+
+    
+    case 47:
+    setTom1(velocity != 0);
+    break;
+
+    case 45:
+    setTom2(velocity != 0);
+    break;
+
+    case 43:
+    setTom3(velocity != 0);
+    break;
+
+    
+
+    case 52:
+    setCymbal1(velocity != 0);
+    break;
+
+    case 49:
+    setCymbal2(velocity != 0);
+    break;
+
+    case 33:
+    setHiHat(velocity != 0);
+    break;
+    
+    case 31:
+    setHiHatOpen(velocity != 0);
+    break;
+
+    case 28:
+    setRide(velocity != 0);
+    break;
+    
   }  
 }
 
 void setBase(bool on) {
   if (on) {
-    baseTime = millis();
-    baseFlag = true;
-    for (int i=0; i< 1; i++) {
-      digitalWrite(basePins[i], LOW);    
-    }
+    basePinTime = millis();
+    basePinFlag = true;
+    digitalWrite(basePin, LOW);    
   }
-  
 }
 
 void setSnare(bool on) {
   if (on) {
-    snareTime = millis();
-    snareFlag = true;
-    for (int i=0; i< 1; i++) {
-      digitalWrite(snarePins[i], LOW);    
-    }
+    snarePinTime = millis();
+    snarePinFlag = true;
+    digitalWrite(snarePin, LOW);    
   }
 }
 
 void setHiHat(bool on) {
   if (on) {
-    hiHatFlag = true;
-    hiHatTime = millis();
-    for (int i=0; i< 1; i++) {
-      digitalWrite(hiHatPins[i], LOW);    
-    }
+    hiHatPinFlag = true;
+    hiHatPinTime = millis();
+    digitalWrite(hiHatPin, LOW);    
   }
 }
 
-void setBase2(bool on) {
-  
+void setCymbal1(bool on) {
   if (on) {
-    baseTime2 = millis();
-    for (int i=0; i< 1; i++) {
-   //   Serial.print("base on");
-      digitalWrite(basePins2[i], LOW);    
-    }
+    cymbal1PinFlag = true;
+    cymbal1PinTime = millis();
+    digitalWrite(cymbal1Pin, LOW);    
   }
-  
 }
 
-void setSnare2(bool on) {
+void setCymbal2(bool on) {
   if (on) {
-    snareTime2 = millis();
-    for (int i=0; i< 1; i++) {
-    //  Serial.print("base on");
-      digitalWrite(snarePins2[i], LOW);    
-    }
+    cymbal2PinFlag  = true;
+    cymbal2PinTime = millis();
+    digitalWrite(cymbal2Pin, LOW);    
   }
 }
 
-void setHiHat2(bool on) {
+void setTom1(bool on) {
   if (on) {
-  //  Serial.print("hi hat on");
-    hiHatTime2 = millis();
-    for (int i=0; i< 1; i++) {
-   //   Serial.print("base on");
-      digitalWrite(hiHatPins2[i], LOW);    
-    }
+    tom1PinFlag = true;
+    tom1PinTime = millis();
+    digitalWrite(tom1Pin, LOW);    
   }
 }
 
-void turnOff(int pins[]) {
-  for (int i=0; i< sizeof(pins); i++) {
-      digitalWrite(pins[i], HIGH);    
+void setTom2(bool on) {
+  if (on) {
+    tom2PinFlag = true;
+    tom2PinTime = millis();
+    digitalWrite(tom2Pin, LOW);    
   }
+}
+
+void setTom3(bool on) {
+  if (on) {
+    tom3PinFlag = true;
+    tom3PinTime = millis();
+    digitalWrite(tom3Pin, LOW);    
+  }
+}
+
+void setTom4(bool on) {
+  if (on) {
+    tom4PinFlag = true;
+    tom4PinTime = millis();
+    digitalWrite(tom4Pin, LOW);    
+  }
+}
+
+
+void setClap(bool on) {
+  if (on) {
+    clapPinFlag = true;
+    clapPinTime = millis();
+    digitalWrite(clapPin, LOW);    
+  }
+}
+
+void setHiHatOpen(bool on) {
+  if (on) {
+    hiHatOpenPinFlag = true;
+    hiHatOpenPinTime = millis();
+    digitalWrite(hiHatOpenPin, LOW);    
+  }
+}
+
+void setRide(bool on) {
+  if (on) {
+    ridePinFlag = true;
+    ridePinTime = millis();
+    digitalWrite(ridePin, LOW);    
+  }
+}
+
+
+void turnOff(int pin) {
+    digitalWrite(pin, HIGH);    
 }
 
 void setup(void)
 {
   int  err;
-
   Serial.begin(SERIAL_RATE);
-
   DEBUGS("\n[MidiFile Looper]");
 
   // Initialize SD
@@ -222,19 +286,54 @@ void setup(void)
     DEBUG("\nSMF load Error ", err);
     while (true);
   }
-//  SMF.setTempo(200);
-   
-  pinMode(4, OUTPUT);
-  pinMode(6, OUTPUT);
-  pinMode(8, OUTPUT);
-  pinMode(3, OUTPUT);
-  digitalWrite(4, HIGH); 
-  digitalWrite(6, HIGH); 
-  digitalWrite(8, HIGH); 
-  digitalWrite(3, HIGH); 
-  snareTime = millis();
-  hiHatTime = millis();
-  baseTime = millis();
+//   
+//  pinMode(2, OUTPUT);
+//  pinMode(3, OUTPUT);
+//  pinMode(4, OUTPUT);
+//  pinMode(5, OUTPUT);
+//  pinMode(6, OUTPUT);
+  pinMode(7, OUTPUT);
+//  pinMode(8, OUTPUT);
+//  pinMode(9, OUTPUT);
+//  pinMode(10, OUTPUT);
+//  pinMode(11, OUTPUT);
+//  pinMode(12, OUTPUT);
+//  pinMode(1, OUTPUT);
+  
+//  digitalWrite(2, HIGH); 
+//  digitalWrite(3, HIGH); 
+//  digitalWrite(4, HIGH); 
+//  digitalWrite(5, HIGH); 
+//  digitalWrite(6, HIGH); 
+  digitalWrite(7, HIGH); 
+//  digitalWrite(8, HIGH); 
+//  digitalWrite(9, HIGH); 
+//  digitalWrite(10, HIGH); 
+//  digitalWrite(11, HIGH); 
+//  digitalWrite(12, HIGH); 
+//  digitalWrite(1, HIGH); 
+  
+
+  
+  cymbal1PinTime = millis();
+  cymbal2PinTime = millis();
+
+  tom1PinTime = millis();
+  tom2PinTime = millis();
+  tom3PinTime = millis();
+  tom4PinTime = millis();
+
+  snarePinTime = millis();
+
+  basePinTime = millis();
+
+  clapPinTime = millis();
+
+  hiHatPinTime = millis();
+  hiHatOpenPinTime = millis();
+
+  ridePinTime = millis();
+
 }
 
 
@@ -246,31 +345,66 @@ void loop(void)
   {
     SMF.getNextEvent();
   } 
-  
-  if ((millis() - snareTime) > 20 && snareFlag) {
-    turnOff(snarePins);
-    snareFlag = false;
+
+
+  if ((millis() - cymbal1PinTime) > 30 && cymbal1PinFlag) {
+    turnOff(cymbal1Pin);
+    cymbal1PinFlag = false;
   }
 
-  if ((millis() - hiHatTime) > 50 && hiHatFlag) {
-    turnOff(hiHatPins);
-    hiHatFlag = false;
+  if ((millis() - cymbal2PinTime) > 30 && cymbal2PinFlag) {
+    turnOff(cymbal2Pin);
+    cymbal2PinFlag = false;
   }
 
-if ((millis() - baseTime) > 80 && baseFlag) {
-    turnOff(basePins);
-    baseFlag = false;
+  if ((millis() - tom1PinTime) > 80 && tom1PinFlag) {
+    turnOff(tom1Pin);
+    tom1PinFlag = false;
+  }
+
+  if ((millis() - tom2PinTime) > 80 && tom2PinFlag) {
+    turnOff(tom2Pin);
+    tom2PinFlag = false;
+  }
+
+  if ((millis() - tom3PinTime) > 80 && tom3PinFlag) {
+    turnOff(tom3Pin);
+    tom3PinFlag = false;
+  }
+
+  if ((millis() - tom4PinTime) > 80 && tom4PinFlag) {
+    turnOff(tom4Pin);
+    tom4PinFlag = false;
   }
   
-//  if (millis() - baseTime2 > 40) {
-//    turnOff(basePins2);
-//  }
-//
-//  if (millis() - snareTime2 > 50) {
-//    turnOff(snarePins2);
-//  }
-//
-//  if (millis() - hiHatTime2 > 20) {
-//    turnOff(hiHatPins2);
-//  }
+  if ((millis() - snarePinTime) > 20 && snarePinFlag) {
+    turnOff(snarePin);
+    snarePinFlag = false;
+  }
+
+  if ((millis() - hiHatPinTime) > 40 && hiHatPinFlag) {
+    turnOff(hiHatPin);
+    hiHatPinFlag = false;
+  }
+
+  if ((millis() - basePinTime) > 80 && basePinFlag) {
+    turnOff(basePin);
+    basePinFlag = false;
+  }
+
+  if ((millis() - clapPinTime) > 100 && clapPinFlag) {
+    turnOff(clapPin);
+    clapPinFlag = false;
+  }
+
+  if ((millis() - hiHatOpenPinTime) > 70 && hiHatOpenPinFlag) {
+    turnOff(hiHatOpenPin);
+    hiHatOpenPinFlag = false;
+  }
+
+  if ((millis() - ridePinTime) > 300 && ridePinFlag) {
+    turnOff(ridePin);
+    ridePinFlag = false;
+  }
+  
 }
