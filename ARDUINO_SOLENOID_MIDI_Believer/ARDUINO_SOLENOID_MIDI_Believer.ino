@@ -17,10 +17,11 @@
 #define ARRAY_SIZE(a) (sizeof(a)/sizeof(a[0]))
 
 const char *loopfile = "blvr6.mid";  // simple and short file
-
+//blvrnew
+//blvrnewloop
 SdFat	SD;
 MD_MIDIFile SMF;
-
+//#define DUMP_DATA 1;
 int cymbal1Pin = 2;
 int cymbal2Pin = 3; //3
 
@@ -38,7 +39,7 @@ int clapPin = 10;
 int hiHatPin = 11;
 int hiHatOpenPin = 12;
 
-int ridePin = 1; //13
+int ridePin = 13; //13
 
 
 unsigned long cymbal1PinTime = 0;
@@ -86,9 +87,12 @@ boolean ridePinFlag = false;
 
 void midiCallback(midi_event *pev)
 {
-//  DEBUG("\nM T", pev->track);
-//  DEBUG(":  Ch ", pev->channel+1);
-//  DEBUGS(" Data");
+//  DEBUGX("\nM T", pev->track);
+  DEBUG(":  Ch ", pev->channel);
+  DEBUGX(" Data", sizeof(pev->data));
+  DEBUGX(" Data0", pev->data[0]);
+  DEBUGX(" Data1", pev->data[1]);
+  DEBUGX(" Data2", pev->data[2]);
 //  
   int note = pev->data[1];
   int velocity = pev->data[2];
@@ -97,8 +101,8 @@ void midiCallback(midi_event *pev)
  DEBUG(" ", mDelay);
   DEBUG(" ", note);
   DEBUG(" ", velocity);
-  Serial.println("");
-//  delay(mDelay);
+  Serial.println("--");
+//
   switch(note) {
     case 35:
     setBase(velocity != 0);
@@ -150,6 +154,10 @@ void midiCallback(midi_event *pev)
 
     case 28:
     setRide(velocity != 0);
+    break;
+
+    default:
+      Serial.println("NOTHING");
     break;
     
   }  
@@ -287,31 +295,31 @@ void setup(void)
     while (true);
   }
 //   
-//  pinMode(2, OUTPUT);
-//  pinMode(3, OUTPUT);
-//  pinMode(4, OUTPUT);
-//  pinMode(5, OUTPUT);
-//  pinMode(6, OUTPUT);
+  pinMode(2, OUTPUT);
+  pinMode(3, OUTPUT);
+  pinMode(4, OUTPUT);
+  pinMode(5, OUTPUT);
+  pinMode(6, OUTPUT);
   pinMode(7, OUTPUT);
-//  pinMode(8, OUTPUT);
-//  pinMode(9, OUTPUT);
-//  pinMode(10, OUTPUT);
-//  pinMode(11, OUTPUT);
-//  pinMode(12, OUTPUT);
-//  pinMode(1, OUTPUT);
+  pinMode(8, OUTPUT);
+  pinMode(9, OUTPUT);
+  pinMode(10, OUTPUT);
+  pinMode(11, OUTPUT);
+  pinMode(12, OUTPUT);
+  pinMode(13, OUTPUT);
   
-//  digitalWrite(2, HIGH); 
-//  digitalWrite(3, HIGH); 
-//  digitalWrite(4, HIGH); 
-//  digitalWrite(5, HIGH); 
-//  digitalWrite(6, HIGH); 
+  digitalWrite(2, HIGH); 
+  digitalWrite(3, HIGH); 
+  digitalWrite(4, HIGH); 
+  digitalWrite(5, HIGH); 
+  digitalWrite(6, HIGH); 
   digitalWrite(7, HIGH); 
-//  digitalWrite(8, HIGH); 
-//  digitalWrite(9, HIGH); 
-//  digitalWrite(10, HIGH); 
-//  digitalWrite(11, HIGH); 
-//  digitalWrite(12, HIGH); 
-//  digitalWrite(1, HIGH); 
+  digitalWrite(8, HIGH); 
+  digitalWrite(9, HIGH); 
+  digitalWrite(10, HIGH); 
+  digitalWrite(11, HIGH); 
+  digitalWrite(12, HIGH); 
+  digitalWrite(13, HIGH); 
   
 
   
@@ -382,7 +390,7 @@ void loop(void)
     snarePinFlag = false;
   }
 
-  if ((millis() - hiHatPinTime) > 40 && hiHatPinFlag) {
+  if ((millis() - hiHatPinTime) > 80 && hiHatPinFlag) {
     turnOff(hiHatPin);
     hiHatPinFlag = false;
   }
@@ -392,7 +400,7 @@ void loop(void)
     basePinFlag = false;
   }
 
-  if ((millis() - clapPinTime) > 100 && clapPinFlag) {
+  if ((millis() - clapPinTime) > 70 && clapPinFlag) {
     turnOff(clapPin);
     clapPinFlag = false;
   }
